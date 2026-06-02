@@ -45,7 +45,9 @@ import {
   ForwardResolveRef,
 } from "@/omnigraph-api/schema/forward-resolve";
 import { LabelRef } from "@/omnigraph-api/schema/label";
+import { ListingRef } from "@/omnigraph-api/schema/listing";
 import { NameSaleRef, nameSalesConnection } from "@/omnigraph-api/schema/name-sale";
+import { OfferRef } from "@/omnigraph-api/schema/offer";
 import { PermissionsUserRef } from "@/omnigraph-api/schema/permissions";
 import { RegistrationInterfaceRef } from "@/omnigraph-api/schema/registration";
 import { RegistryInterfaceRef } from "@/omnigraph-api/schema/registry";
@@ -343,6 +345,56 @@ DomainInterfaceRef.implement({
           .orderBy(desc(sales.timestamp), desc(sales.id))
           .limit(1);
         return rows[0]?.id ?? null;
+      },
+    }),
+
+    //////////////////
+    // Domain.listings
+    //////////////////
+    listings: t.field({
+      description:
+        "Live secondary-market listings for this name, federated from an off-chain marketplace. Null when federation is disabled or the name is not a normalized, canonical name.",
+      type: [ListingRef],
+      nullable: true,
+      resolve: async (parent) => {
+        const { grailsClient } = di.context;
+        const name = parent.canonicalName;
+        if (!grailsClient.enabled || !name || !isNormalizedName(name)) return null;
+        return grailsClient.listingsByName(name);
+      },
+    }),
+
+    ////////////////
+    // Domain.offers
+    ////////////////
+    offers: t.field({
+      description:
+        "Live secondary-market offers (bids) for this name, federated from an off-chain marketplace. Null when federation is disabled or the name is not a normalized, canonical name.",
+      type: [OfferRef],
+      nullable: true,
+      resolve: async (parent) => {
+        const { grailsClient } = di.context;
+        const name = parent.canonicalName;
+        if (!grailsClient.enabled || !name || !isNormalizedName(name)) return null;
+        return grailsClient.offersByName(name);
+      },
+    }),
+
+    /////////////////////
+    // Domain.floorListing
+    /////////////////////
+    floorListing: t.field({
+      description:
+        "The lowest-priced active listing for this name (its floor), if any. Null when federation is disabled or the name has no active listings. Compares raw `priceWei` without normalizing across currencies.",
+      type: ListingRef,
+      nullable: true,
+      resolve: async (parent) => {
+        const { grailsClient } = di.context;
+        const name = parent.canonicalName;
+        if (!grailsClient.enabled || !name || !isNormalizedName(name)) return null;
+        const listings = await grailsClient.listingsByName(name);
+        if (listings.length === 0) return null;
+        return listings.reduce((min, listing) => (listing.priceWei < min.priceWei ? listing : min));
       },
     }),
   }),

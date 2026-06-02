@@ -4,7 +4,9 @@ import type { Hex } from "viem";
 
 import di from "@/di";
 import { builder } from "@/omnigraph-api/builder";
+import { ListingRef } from "@/omnigraph-api/schema/listing";
 import { NameSaleRef, nameSalesConnection } from "@/omnigraph-api/schema/name-sale";
+import { OfferRef } from "@/omnigraph-api/schema/offer";
 
 /**
  * `AccountMarket` is the account-rooted view of ENS secondary-market activity, reached via
@@ -37,6 +39,36 @@ AccountMarketRef.implement({
       resolve: (address, args) => {
         const { ensIndexerSchema } = di.context;
         return nameSalesConnection(eq(ensIndexerSchema.nameSales.seller, address as Hex), args);
+      },
+    }),
+
+    /////////////////////////
+    // AccountMarket.listings
+    /////////////////////////
+    listings: t.field({
+      description:
+        "This account's live marketplace listings (as seller), truncated. Null when federation is disabled.",
+      type: [ListingRef],
+      nullable: true,
+      resolve: async (address) => {
+        const { grailsClient } = di.context;
+        if (!grailsClient.enabled) return null;
+        return grailsClient.listingsBySeller(address);
+      },
+    }),
+
+    ///////////////////////
+    // AccountMarket.offers
+    ///////////////////////
+    offers: t.field({
+      description:
+        "This account's live marketplace offers (as buyer), truncated. Null when federation is disabled.",
+      type: [OfferRef],
+      nullable: true,
+      resolve: async (address) => {
+        const { grailsClient } = di.context;
+        if (!grailsClient.enabled) return null;
+        return grailsClient.offersByBuyer(address);
       },
     }),
   }),
