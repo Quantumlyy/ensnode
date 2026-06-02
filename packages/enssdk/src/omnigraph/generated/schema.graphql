@@ -123,6 +123,16 @@ input AccountIdInput {
 
 """An account's ENS secondary-market activity."""
 type AccountMarket {
+  """
+  This account's live marketplace listings (as seller), truncated. Null when federation is disabled.
+  """
+  listings: [Listing!]
+
+  """
+  This account's live marketplace offers (as buyer), truncated. Null when federation is disabled.
+  """
+  offers: [Offer!]
+
   """Sales in which this account was the buyer, newest first."""
   purchases(after: String, before: String, first: Int, last: Int): AccountMarketPurchasesConnection
 
@@ -335,6 +345,11 @@ interface Domain {
   """All Events associated with this Domain."""
   events(after: String, before: String, first: Int, last: Int, where: EventsWhereInput): DomainEventsConnection
 
+  """
+  The lowest-priced active listing for this name (its floor), if any. Null when federation is disabled or the name has no active listings. Compares raw `priceWei` without normalizing across currencies.
+  """
+  floorListing: Listing
+
   """A unique and stable reference to this Domain."""
   id: DomainId!
 
@@ -343,6 +358,16 @@ interface Domain {
 
   """The most recent secondary-market sale of this Domain's name, if any."""
   lastSale: NameSale
+
+  """
+  Live secondary-market listings for this name, federated from an off-chain marketplace. Null when federation is disabled or the name is not a normalized, canonical name.
+  """
+  listings: [Listing!]
+
+  """
+  Live secondary-market offers (bids) for this name, federated from an off-chain marketplace. Null when federation is disabled or the name is not a normalized, canonical name.
+  """
+  offers: [Offer!]
 
   """
   If this is an ENSv1Domain, this is the effective owner of the Domain. If this is an ENSv2Domain, this is the on-chain owner address (the HCA account address if used).
@@ -567,6 +592,11 @@ type ENSv1Domain implements Domain {
   """All Events associated with this Domain."""
   events(after: String, before: String, first: Int, last: Int, where: EventsWhereInput): DomainEventsConnection
 
+  """
+  The lowest-priced active listing for this name (its floor), if any. Null when federation is disabled or the name has no active listings. Compares raw `priceWei` without normalizing across currencies.
+  """
+  floorListing: Listing
+
   """A unique and stable reference to this Domain."""
   id: DomainId!
 
@@ -576,8 +606,18 @@ type ENSv1Domain implements Domain {
   """The most recent secondary-market sale of this Domain's name, if any."""
   lastSale: NameSale
 
+  """
+  Live secondary-market listings for this name, federated from an off-chain marketplace. Null when federation is disabled or the name is not a normalized, canonical name.
+  """
+  listings: [Listing!]
+
   """The namehash of this ENSv1 Domain."""
   node: Node!
+
+  """
+  Live secondary-market offers (bids) for this name, federated from an off-chain marketplace. Null when federation is disabled or the name is not a normalized, canonical name.
+  """
+  offers: [Offer!]
 
   """
   If this is an ENSv1Domain, this is the effective owner of the Domain. If this is an ENSv2Domain, this is the on-chain owner address (the HCA account address if used).
@@ -692,6 +732,11 @@ type ENSv2Domain implements Domain {
   """All Events associated with this Domain."""
   events(after: String, before: String, first: Int, last: Int, where: EventsWhereInput): DomainEventsConnection
 
+  """
+  The lowest-priced active listing for this name (its floor), if any. Null when federation is disabled or the name has no active listings. Compares raw `priceWei` without normalizing across currencies.
+  """
+  floorListing: Listing
+
   """A unique and stable reference to this Domain."""
   id: DomainId!
 
@@ -700,6 +745,16 @@ type ENSv2Domain implements Domain {
 
   """The most recent secondary-market sale of this Domain's name, if any."""
   lastSale: NameSale
+
+  """
+  Live secondary-market listings for this name, federated from an off-chain marketplace. Null when federation is disabled or the name is not a normalized, canonical name.
+  """
+  listings: [Listing!]
+
+  """
+  Live secondary-market offers (bids) for this name, federated from an off-chain marketplace. Null when federation is disabled or the name is not a normalized, canonical name.
+  """
+  offers: [Offer!]
 
   """
   If this is an ENSv1Domain, this is the effective owner of the Domain. If this is an ENSv2Domain, this is the on-chain owner address (the HCA account address if used).
@@ -1067,6 +1122,53 @@ type Label {
 }
 
 """
+A live secondary-market sell order ("Buy Now") for an ENS name, federated from an off-chain marketplace. Unlike an on-chain NameSale (a settled sale), a Listing is an unsettled signed Seaport order and may be denominated in any currency.
+"""
+type Listing {
+  """ISO-8601 timestamp at which the order was created, if known."""
+  createdAt: String
+
+  """
+  The payment currency's ERC-20 contract address; the zero address denotes native ETH.
+  """
+  currencyAddress: Address!
+
+  """
+  The indexed Domain for this listing's name, if the name is normalized and canonical.
+  """
+  domain: Domain
+
+  """ISO-8601 timestamp at which the order expires, if known."""
+  expiresAt: String
+
+  """The marketplace's identifier for this listing."""
+  id: ID!
+
+  """The ENS name this listing is for."""
+  name: String!
+
+  """The Seaport order hash."""
+  orderHash: Hex!
+
+  """
+  The asking price, denominated in the smallest unit of `currencyAddress`.
+  """
+  priceWei: BigInt!
+
+  """The account offering the name for sale."""
+  seller: Account!
+
+  """The marketplace the order originates from (e.g. `grails`, `opensea`)."""
+  source: String!
+
+  """The marketplace order status (e.g. `active`)."""
+  status: String!
+
+  """The token id of the listed ENS name NFT."""
+  tokenId: BigInt!
+}
+
+"""
 Queries for ENS secondary-market data indexed from on-chain Seaport sales.
 """
 type MarketQuery {
@@ -1218,6 +1320,53 @@ type NameWrapperRegistration implements Registration {
 
 """Node represents an enssdk#Node."""
 scalar Node
+
+"""
+A live secondary-market buy order (bid) for an ENS name, federated from an off-chain marketplace. It is an unsettled signed Seaport order and may be denominated in any currency (offers are commonly in WETH).
+"""
+type Offer {
+  """The account making the offer."""
+  buyer: Account!
+
+  """ISO-8601 timestamp at which the order was created, if known."""
+  createdAt: String
+
+  """
+  The payment currency's ERC-20 contract address; the zero address denotes native ETH.
+  """
+  currencyAddress: Address!
+
+  """
+  The indexed Domain for this offer's name, if the name is normalized and canonical.
+  """
+  domain: Domain
+
+  """ISO-8601 timestamp at which the order expires, if known."""
+  expiresAt: String
+
+  """The marketplace's identifier for this offer."""
+  id: ID!
+
+  """The ENS name this offer is for."""
+  name: String!
+
+  """The Seaport order hash."""
+  orderHash: Hex!
+
+  """
+  The offered amount, denominated in the smallest unit of `currencyAddress`.
+  """
+  priceWei: BigInt!
+
+  """The marketplace the order originates from (e.g. `grails`, `opensea`)."""
+  source: String!
+
+  """The marketplace order status (e.g. `pending`)."""
+  status: String!
+
+  """The token id of the ENS name NFT being bid on."""
+  tokenId: BigInt!
+}
 
 """Sort direction"""
 enum OrderDirection {
