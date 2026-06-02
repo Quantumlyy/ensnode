@@ -4,6 +4,7 @@ import type { Hex } from "viem";
 
 import di from "@/di";
 import { builder } from "@/omnigraph-api/builder";
+import { resolveGrailsForAccount } from "@/omnigraph-api/lib/resolve-grails-field";
 import { ListingRef } from "@/omnigraph-api/schema/listing";
 import { NameSaleRef, nameSalesConnection } from "@/omnigraph-api/schema/name-sale";
 import { OfferRef } from "@/omnigraph-api/schema/offer";
@@ -50,11 +51,8 @@ AccountMarketRef.implement({
         "This account's live marketplace listings (as seller), truncated. Null when federation is disabled.",
       type: [ListingRef],
       nullable: true,
-      resolve: async (address) => {
-        const { grailsClient } = di.context;
-        if (!grailsClient.enabled) return null;
-        return grailsClient.listingsBySeller(address);
-      },
+      resolve: (address) =>
+        resolveGrailsForAccount(address, (client, seller) => client.listingsBySeller(seller)),
     }),
 
     ///////////////////////
@@ -65,11 +63,8 @@ AccountMarketRef.implement({
         "This account's live marketplace offers (as buyer), truncated. Null when federation is disabled.",
       type: [OfferRef],
       nullable: true,
-      resolve: async (address) => {
-        const { grailsClient } = di.context;
-        if (!grailsClient.enabled) return null;
-        return grailsClient.offersByBuyer(address);
-      },
+      resolve: (address) =>
+        resolveGrailsForAccount(address, (client, buyer) => client.offersByBuyer(buyer)),
     }),
   }),
 });
