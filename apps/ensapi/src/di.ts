@@ -17,6 +17,7 @@ import type { EnsApiConfig } from "@/config/config.schema";
 import { buildConfigFromEnvironment, buildRootChainRpcConfig } from "@/config/config.schema";
 import { buildEnsDbConfigFromEnvironment } from "@/config/ensdb-config";
 import type { EnsApiEnvironment } from "@/config/environment";
+import { GrailsClient } from "@/lib/grails/grails-client";
 import { makeLogger } from "@/lib/logger";
 
 const logger = makeLogger("di");
@@ -79,6 +80,12 @@ export interface EnsApiDiContext {
    * Singleton {@link ReferralProgramEditionConfigSetCache} instance to be used across ENSApi.
    */
   referralProgramEditionConfigSetCache: ReferralProgramEditionConfigSetCache;
+
+  /**
+   * Singleton {@link GrailsClient} for federated secondary-market data. A no-op (disabled) when
+   * `GRAILS_API_URL` is unset.
+   */
+  grailsClient: GrailsClient;
 
   /**
    * Singleton {@link EnsNodeStackInfoCache} instance to be used across ENSApi.
@@ -169,6 +176,14 @@ export function buildEnsApiDiContext(ensApiEnvironment: EnsApiEnvironment): EnsA
       }
 
       return instances.indexingStatusCache;
+    },
+
+    get grailsClient(): GrailsClient {
+      if (instances.grailsClient === undefined) {
+        instances.grailsClient = new GrailsClient(context.ensApiConfig.grailsApiUrl);
+      }
+
+      return instances.grailsClient;
     },
 
     get referralProgramEditionConfigSetCache(): ReferralProgramEditionConfigSetCache {

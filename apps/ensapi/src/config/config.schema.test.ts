@@ -37,7 +37,22 @@ describe("buildConfigFromEnvironment", () => {
       port: ENSApi_DEFAULT_PORT,
       theGraphApiKey: undefined,
       referralProgramEditionConfigSetUrl: undefined,
+      grailsApiUrl: undefined,
     });
+  });
+
+  it("normalizes GRAILS_API_URL, stripping a trailing slash", async () => {
+    const exitSpy = mockProcessExit();
+
+    const config = buildConfigFromEnvironment({
+      ...BASE_ENV,
+      GRAILS_API_URL: "https://api.grails.app/api/v1/",
+    });
+
+    expect(exitSpy).not.toHaveBeenCalled();
+    exitSpy.mockRestore();
+
+    expect(config.grailsApiUrl).toBe("https://api.grails.app/api/v1");
   });
 
   it("parses REFERRAL_PROGRAM_EDITIONS as a URL object", async () => {

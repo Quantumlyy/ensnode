@@ -38,10 +38,27 @@ const ReferralProgramEditionConfigSetUrlSchema = z
   })
   .optional();
 
+/**
+ * Schema for the optional Grails marketplace API base URL. Normalizes to a string without a
+ * trailing slash; when unset, federated secondary-market fields are disabled.
+ */
+const GrailsApiUrlSchema = z
+  .string()
+  .transform((val, ctx) => {
+    try {
+      return new URL(val).toString().replace(/\/$/, "");
+    } catch {
+      ctx.addIssue({ code: "custom", message: `GRAILS_API_URL is not a valid URL: ${val}` });
+      return z.NEVER;
+    }
+  })
+  .optional();
+
 const EnsApiConfigSchema = z.object({
   port: OptionalPortNumberSchema.default(ENSApi_DEFAULT_PORT),
   theGraphApiKey: TheGraphApiKeySchema,
   referralProgramEditionConfigSetUrl: ReferralProgramEditionConfigSetUrlSchema,
+  grailsApiUrl: GrailsApiUrlSchema,
 });
 
 export type EnsApiConfig = z.infer<typeof EnsApiConfigSchema>;
@@ -60,6 +77,7 @@ export function buildConfigFromEnvironment(env: EnsApiEnvironment): EnsApiConfig
       port: env.PORT,
       theGraphApiKey: env.THEGRAPH_API_KEY,
       referralProgramEditionConfigSetUrl: env.REFERRAL_PROGRAM_EDITIONS,
+      grailsApiUrl: env.GRAILS_API_URL,
     });
   } catch (error) {
     if (error instanceof ZodError) {

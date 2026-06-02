@@ -19,4 +19,11 @@ export type EnsApiEnvironment = EnsDbEnvironment &
   PortEnvironment &
   LogLevelEnvironment &
   TheGraphEnvironment &
-  ReferralProgramEditionsEnvironment;
+  ReferralProgramEditionsEnvironment & {
+    /**
+     * Optional base URL for the Grails marketplace API (e.g. `https://api.grails.app/api/v1`).
+     * When set, ENSApi federates live secondary-market listings/offers; when unset, those
+     * Omnigraph fields are disabled and return null.
+     */
+    GRAILS_API_URL?: string;
+  };
