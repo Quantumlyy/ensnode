@@ -12,6 +12,7 @@ import { lazyConnection } from "@/omnigraph-api/lib/lazy-connection";
 import { buildAccountPrimaryNamesSelection } from "@/omnigraph-api/lib/resolution/account-primary-names-selection";
 import { resolvePrimaryNameRecords } from "@/omnigraph-api/lib/resolution/resolve-primary-name-records";
 import { AccountIdInput } from "@/omnigraph-api/schema/account-id";
+import { AccountMarketRef } from "@/omnigraph-api/schema/account-name-sales";
 import {
   ID_PAGINATED_CONNECTION_ARGS,
   RESOLVE_ACCELERATE_ARG,
@@ -262,6 +263,16 @@ AccountRef.implement({
             ),
         });
       },
+    }),
+
+    ////////////////
+    // Account.market
+    ////////////////
+    market: t.field({
+      description: "This Account's ENS secondary-market activity (purchases and sales).",
+      type: AccountMarketRef,
+      nullable: false,
+      resolve: (parent) => parent.id,
     }),
   }),
 });

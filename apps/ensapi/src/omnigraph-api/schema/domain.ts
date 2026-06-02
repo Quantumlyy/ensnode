@@ -1,6 +1,6 @@
 import { trace } from "@opentelemetry/api";
 import { type ResolveCursorConnectionArgs, resolveCursorConnection } from "@pothos/plugin-relay";
-import { and, count, eq, getTableColumns, inArray, sql } from "drizzle-orm";
+import { and, count, desc, eq, getTableColumns, inArray, sql } from "drizzle-orm";
 import { type DomainId, isNormalizedName } from "enssdk";
 
 import type { RequiredAndNotNull, RequiredAndNull } from "@ensnode/ensnode-sdk";
@@ -45,6 +45,7 @@ import {
   ForwardResolveRef,
 } from "@/omnigraph-api/schema/forward-resolve";
 import { LabelRef } from "@/omnigraph-api/schema/label";
+import { NameSaleRef, nameSalesConnection } from "@/omnigraph-api/schema/name-sale";
 import { PermissionsUserRef } from "@/omnigraph-api/schema/permissions";
 import { RegistrationInterfaceRef } from "@/omnigraph-api/schema/registration";
 import { RegistryInterfaceRef } from "@/omnigraph-api/schema/registry";
@@ -305,6 +306,43 @@ DomainInterfaceRef.implement({
             scope: eq(ensIndexerSchema.domainEvent.domainId, parent.id),
           },
         });
+      },
+    }),
+
+    ///////////////
+    // Domain.sales
+    ///////////////
+    sales: t.connection({
+      description: "All secondary-market sales of this Domain's name, newest first.",
+      type: NameSaleRef,
+      resolve: (parent, args) => {
+        if (!parent.canonicalNode) return EMPTY_CONNECTION;
+        const { ensIndexerSchema } = di.context;
+        return nameSalesConnection(
+          eq(ensIndexerSchema.nameSales.domainId, parent.canonicalNode),
+          args,
+        );
+      },
+    }),
+
+    //////////////////
+    // Domain.lastSale
+    //////////////////
+    lastSale: t.field({
+      description: "The most recent secondary-market sale of this Domain's name, if any.",
+      type: NameSaleRef,
+      nullable: true,
+      resolve: async (parent) => {
+        if (!parent.canonicalNode) return null;
+        const { ensDb, ensIndexerSchema } = di.context;
+        const sales = ensIndexerSchema.nameSales;
+        const rows = await ensDb
+          .select({ id: sales.id })
+          .from(sales)
+          .where(eq(sales.domainId, parent.canonicalNode))
+          .orderBy(desc(sales.timestamp), desc(sales.id))
+          .limit(1);
+        return rows[0]?.id ?? null;
       },
     }),
   }),
