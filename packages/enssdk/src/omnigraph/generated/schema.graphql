@@ -23,6 +23,9 @@ type Account {
   """A unique reference to this Account."""
   id: Address!
 
+  """This Account's ENS secondary-market activity (purchases and sales)."""
+  market: AccountMarket!
+
   """
   The Permissions granted to this Account, optionally filtered to Permissions in a specific contract.
   """
@@ -118,6 +121,37 @@ input AccountIdInput {
   chainId: ChainId!
 }
 
+"""An account's ENS secondary-market activity."""
+type AccountMarket {
+  """Sales in which this account was the buyer, newest first."""
+  purchases(after: String, before: String, first: Int, last: Int): AccountMarketPurchasesConnection
+
+  """Sales in which this account was the seller, newest first."""
+  sales(after: String, before: String, first: Int, last: Int): AccountMarketSalesConnection
+}
+
+type AccountMarketPurchasesConnection {
+  edges: [AccountMarketPurchasesConnectionEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type AccountMarketPurchasesConnectionEdge {
+  cursor: String!
+  node: NameSale!
+}
+
+type AccountMarketSalesConnection {
+  edges: [AccountMarketSalesConnectionEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type AccountMarketSalesConnectionEdge {
+  cursor: String!
+  node: NameSale!
+}
+
 type AccountPermissionsConnection {
   edges: [AccountPermissionsConnectionEdge!]!
   pageInfo: PageInfo!
@@ -161,6 +195,14 @@ type AccountResolverPermissionsConnectionEdge {
 
 """Address represents an EVM Address in all lowercase."""
 scalar Address
+
+"""
+The CAIP-19 Asset Namespace of a token (https://chainagnostic.org/CAIPs/caip-19).
+"""
+enum AssetNamespace {
+  erc721
+  erc1155
+}
 
 """
 A BaseRegistrarRegistration represents a Registration within an ENSv1 BaseRegistrar contract, including those deployed by Basenames and Lineanames.
@@ -273,6 +315,14 @@ enum ChainName {
 """CoinType represents an enssdk#CoinType."""
 scalar CoinType
 
+"""A currency in which a secondary-market payment may be denominated."""
+enum Currency {
+  DAI
+  ENSTokens
+  ETH
+  USDC
+}
+
 """
 Represents a Domain, i.e. an individual Label within the ENS namegraph. It may or may not be Canonical. It may be an ENSv1Domain or an ENSv2Domain.
 """
@@ -290,6 +340,9 @@ interface Domain {
 
   """The Label associated with this Domain in the ENS Namegraph."""
   label: Label!
+
+  """The most recent secondary-market sale of this Domain's name, if any."""
+  lastSale: NameSale
 
   """
   If this is an ENSv1Domain, this is the effective owner of the Domain. If this is an ENSv2Domain, this is the on-chain owner address (the HCA account address if used).
@@ -321,6 +374,9 @@ interface Domain {
 
   """Resolver relationship metadata for this Domain."""
   resolver: DomainResolver!
+
+  """All secondary-market sales of this Domain's name, newest first."""
+  sales(after: String, before: String, first: Int, last: Int): DomainSalesConnection
 
   """
   All Domains that are direct descendents of this Domain in the namegraph.
@@ -426,6 +482,17 @@ type DomainResolver {
   assigned: Resolver
 }
 
+type DomainSalesConnection {
+  edges: [DomainSalesConnectionEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type DomainSalesConnectionEdge {
+  cursor: String!
+  node: NameSale!
+}
+
 type DomainSubdomainsConnection {
   edges: [DomainSubdomainsConnectionEdge!]!
   pageInfo: PageInfo!
@@ -506,6 +573,9 @@ type ENSv1Domain implements Domain {
   """The Label associated with this Domain in the ENS Namegraph."""
   label: Label!
 
+  """The most recent secondary-market sale of this Domain's name, if any."""
+  lastSale: NameSale
+
   """The namehash of this ENSv1 Domain."""
   node: Node!
 
@@ -544,6 +614,9 @@ type ENSv1Domain implements Domain {
   The rootRegistryOwner of this Domain, i.e. the owner() of this Domain within the ENSv1 Registry.
   """
   rootRegistryOwner: Account
+
+  """All secondary-market sales of this Domain's name, newest first."""
+  sales(after: String, before: String, first: Int, last: Int): DomainSalesConnection
 
   """
   All Domains that are direct descendents of this Domain in the namegraph.
@@ -625,6 +698,9 @@ type ENSv2Domain implements Domain {
   """The Label associated with this Domain in the ENS Namegraph."""
   label: Label!
 
+  """The most recent secondary-market sale of this Domain's name, if any."""
+  lastSale: NameSale
+
   """
   If this is an ENSv1Domain, this is the effective owner of the Domain. If this is an ENSv2Domain, this is the on-chain owner address (the HCA account address if used).
   """
@@ -660,6 +736,9 @@ type ENSv2Domain implements Domain {
 
   """Resolver relationship metadata for this Domain."""
   resolver: DomainResolver!
+
+  """All secondary-market sales of this Domain's name, newest first."""
+  sales(after: String, before: String, first: Int, last: Int): DomainSalesConnection
 
   """
   All Domains that are direct descendents of this Domain in the namegraph.
@@ -987,10 +1066,105 @@ type Label {
   interpreted: InterpretedLabel!
 }
 
+"""
+Queries for ENS secondary-market data indexed from on-chain Seaport sales.
+"""
+type MarketQuery {
+  """Get a NameSale by its id."""
+  sale(id: ID!): NameSale
+
+  """Find ENS name sales, newest first, optionally filtered."""
+  sales(after: String, before: String, first: Int, last: Int, where: NameSalesWhereInput): MarketQuerySalesConnection
+}
+
+type MarketQuerySalesConnection {
+  edges: [MarketQuerySalesConnectionEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type MarketQuerySalesConnectionEdge {
+  cursor: String!
+  node: NameSale!
+}
+
 """Constructs a reference to a specific Node via one of `name` or `node`."""
 input NameOrNodeInput @oneOf {
   name: InterpretedName
   node: Node
+}
+
+"""
+A NameSale is a completed secondary-market sale of an ENS name NFT, parsed from a Seaport `OrderFulfilled` event by the TokenScope plugin.
+"""
+type NameSale {
+  """The CAIP-19 Asset Id of the sold token."""
+  assetId: String!
+
+  """The CAIP-19 Asset Namespace of the sold token."""
+  assetNamespace: AssetNamespace!
+
+  """The block number on `chainId` in which the sale occurred."""
+  blockNumber: BigInt!
+
+  """The account that bought the token."""
+  buyer: Account!
+
+  """The ChainId on which the sale occurred."""
+  chainId: ChainId!
+
+  """The address of the NFT contract that manages the sold token."""
+  contractAddress: Address!
+
+  """
+  The Domain whose name was sold, if it is part of the canonical nametree. Null for a sale of a non-canonical name.
+  """
+  domain: Domain
+
+  """A unique reference to this NameSale."""
+  id: ID!
+
+  """The log index of the sale event within its block."""
+  logIndex: Int!
+
+  """The Seaport order hash for the sale."""
+  orderHash: Hex!
+
+  """The payment from buyer to seller in exchange for the token."""
+  price: Price!
+
+  """The account that sold the token."""
+  seller: Account!
+
+  """The Unix timestamp of the block in which the sale occurred."""
+  timestamp: BigInt!
+
+  """The id of the sold token within `contractAddress`."""
+  tokenId: BigInt!
+
+  """The hash of the transaction in which the sale occurred."""
+  transactionHash: Hex!
+}
+
+"""Filters for finding ENS name sales."""
+input NameSalesWhereInput {
+  """Only sales of this CAIP-19 Asset Id."""
+  assetId: String
+
+  """Only sales bought by this account."""
+  buyer: Address
+
+  """Only sales paid in this currency."""
+  currency: Currency
+
+  """Only sales sold by this account."""
+  seller: Address
+
+  """Only sales at or after this Unix timestamp (inclusive)."""
+  since: BigInt
+
+  """Only sales at or before this Unix timestamp (inclusive)."""
+  until: BigInt
 }
 
 """
@@ -1177,6 +1351,17 @@ type PermissionsUserEventsConnectionEdge {
 scalar PermissionsUserId
 
 """
+A payment amount in a specific currency. `amount` is denominated in the currency's smallest unit (e.g. wei for ETH, micro-units for USDC).
+"""
+type Price {
+  """The amount paid, denominated in the currency's smallest unit."""
+  amount: BigInt!
+
+  """The currency of the payment."""
+  currency: Currency!
+}
+
+"""
 Select a primary name lookup target. Exactly one of `coinType` or `chainName` must be provided.
 """
 input PrimaryNameByInput @oneOf {
@@ -1287,6 +1472,9 @@ type Query {
 
   """Find Canonical Domains by Name."""
   domains(after: String, before: String, first: Int, last: Int, order: DomainsOrderInput, where: DomainsWhereInput!): QueryDomainsConnection
+
+  """ENS secondary-market queries."""
+  market: MarketQuery!
 
   """Identify Permissions by ID or AccountId."""
   permissions(by: PermissionsIdInput!): Permissions

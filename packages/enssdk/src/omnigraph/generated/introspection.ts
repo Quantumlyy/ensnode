@@ -187,6 +187,18 @@ const introspection = {
             "isDeprecated": false
           },
           {
+            "name": "market",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "AccountMarket"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
             "name": "permissions",
             "type": {
               "kind": "OBJECT",
@@ -628,6 +640,249 @@ const introspection = {
       },
       {
         "kind": "OBJECT",
+        "name": "AccountMarket",
+        "fields": [
+          {
+            "name": "purchases",
+            "type": {
+              "kind": "OBJECT",
+              "name": "AccountMarketPurchasesConnection"
+            },
+            "args": [
+              {
+                "name": "after",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "before",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "first",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              },
+              {
+                "name": "last",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              }
+            ],
+            "isDeprecated": false
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "OBJECT",
+              "name": "AccountMarketSalesConnection"
+            },
+            "args": [
+              {
+                "name": "after",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "before",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "first",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              },
+              {
+                "name": "last",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              }
+            ],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "AccountMarketPurchasesConnection",
+        "fields": [
+          {
+            "name": "edges",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "AccountMarketPurchasesConnectionEdge"
+                  }
+                }
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "pageInfo",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PageInfo"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "totalCount",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "AccountMarketPurchasesConnectionEdge",
+        "fields": [
+          {
+            "name": "cursor",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "node",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "NameSale"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "AccountMarketSalesConnection",
+        "fields": [
+          {
+            "name": "edges",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "AccountMarketSalesConnectionEdge"
+                  }
+                }
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "pageInfo",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PageInfo"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "totalCount",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "AccountMarketSalesConnectionEdge",
+        "fields": [
+          {
+            "name": "cursor",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "node",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "NameSale"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "AccountPermissionsConnection",
         "fields": [
           {
@@ -883,6 +1138,20 @@ const introspection = {
       {
         "kind": "SCALAR",
         "name": "Address"
+      },
+      {
+        "kind": "ENUM",
+        "name": "AssetNamespace",
+        "enumValues": [
+          {
+            "name": "erc721",
+            "isDeprecated": false
+          },
+          {
+            "name": "erc1155",
+            "isDeprecated": false
+          }
+        ]
       },
       {
         "kind": "OBJECT",
@@ -1179,6 +1448,28 @@ const introspection = {
         "name": "CoinType"
       },
       {
+        "kind": "ENUM",
+        "name": "Currency",
+        "enumValues": [
+          {
+            "name": "DAI",
+            "isDeprecated": false
+          },
+          {
+            "name": "ENSTokens",
+            "isDeprecated": false
+          },
+          {
+            "name": "ETH",
+            "isDeprecated": false
+          },
+          {
+            "name": "USDC",
+            "isDeprecated": false
+          }
+        ]
+      },
+      {
         "kind": "INTERFACE",
         "name": "Domain",
         "fields": [
@@ -1256,6 +1547,15 @@ const introspection = {
                 "kind": "OBJECT",
                 "name": "Label"
               }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "lastSale",
+            "type": {
+              "kind": "OBJECT",
+              "name": "NameSale"
             },
             "args": [],
             "isDeprecated": false
@@ -1368,6 +1668,44 @@ const introspection = {
               }
             },
             "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "OBJECT",
+              "name": "DomainSalesConnection"
+            },
+            "args": [
+              {
+                "name": "after",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "before",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "first",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              },
+              {
+                "name": "last",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              }
+            ],
             "isDeprecated": false
           },
           {
@@ -1810,6 +2148,86 @@ const introspection = {
       },
       {
         "kind": "OBJECT",
+        "name": "DomainSalesConnection",
+        "fields": [
+          {
+            "name": "edges",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "DomainSalesConnectionEdge"
+                  }
+                }
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "pageInfo",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PageInfo"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "totalCount",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "DomainSalesConnectionEdge",
+        "fields": [
+          {
+            "name": "cursor",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "node",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "NameSale"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "DomainSubdomainsConnection",
         "fields": [
           {
@@ -2090,6 +2508,15 @@ const introspection = {
             "isDeprecated": false
           },
           {
+            "name": "lastSale",
+            "type": {
+              "kind": "OBJECT",
+              "name": "NameSale"
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
             "name": "node",
             "type": {
               "kind": "NON_NULL",
@@ -2218,6 +2645,44 @@ const introspection = {
               "name": "Account"
             },
             "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "OBJECT",
+              "name": "DomainSalesConnection"
+            },
+            "args": [
+              {
+                "name": "after",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "before",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "first",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              },
+              {
+                "name": "last",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              }
+            ],
             "isDeprecated": false
           },
           {
@@ -2678,6 +3143,15 @@ const introspection = {
             "isDeprecated": false
           },
           {
+            "name": "lastSale",
+            "type": {
+              "kind": "OBJECT",
+              "name": "NameSale"
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
             "name": "owner",
             "type": {
               "kind": "OBJECT",
@@ -2830,6 +3304,44 @@ const introspection = {
               }
             },
             "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "OBJECT",
+              "name": "DomainSalesConnection"
+            },
+            "args": [
+              {
+                "name": "after",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "before",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "first",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              },
+              {
+                "name": "last",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              }
+            ],
             "isDeprecated": false
           },
           {
@@ -3894,6 +4406,158 @@ const introspection = {
         "interfaces": []
       },
       {
+        "kind": "OBJECT",
+        "name": "MarketQuery",
+        "fields": [
+          {
+            "name": "sale",
+            "type": {
+              "kind": "OBJECT",
+              "name": "NameSale"
+            },
+            "args": [
+              {
+                "name": "id",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID"
+                  }
+                }
+              }
+            ],
+            "isDeprecated": false
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "OBJECT",
+              "name": "MarketQuerySalesConnection"
+            },
+            "args": [
+              {
+                "name": "after",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "before",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              },
+              {
+                "name": "first",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              },
+              {
+                "name": "last",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              },
+              {
+                "name": "where",
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "NameSalesWhereInput"
+                }
+              }
+            ],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "MarketQuerySalesConnection",
+        "fields": [
+          {
+            "name": "edges",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "MarketQuerySalesConnectionEdge"
+                  }
+                }
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "pageInfo",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PageInfo"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "totalCount",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "MarketQuerySalesConnectionEdge",
+        "fields": [
+          {
+            "name": "cursor",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "node",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "NameSale"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "NameOrNodeInput",
         "inputFields": [
@@ -3913,6 +4577,239 @@ const introspection = {
           }
         ],
         "isOneOf": true
+      },
+      {
+        "kind": "OBJECT",
+        "name": "NameSale",
+        "fields": [
+          {
+            "name": "assetId",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "assetNamespace",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "ENUM",
+                "name": "AssetNamespace"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "blockNumber",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "BigInt"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "buyer",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Account"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "chainId",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ChainId"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "contractAddress",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Address"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "domain",
+            "type": {
+              "kind": "INTERFACE",
+              "name": "Domain"
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "logIndex",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "orderHash",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Hex"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "price",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Price"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "seller",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Account"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "timestamp",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "BigInt"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "tokenId",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "BigInt"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "transactionHash",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Hex"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "NameSalesWhereInput",
+        "inputFields": [
+          {
+            "name": "assetId",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String"
+            }
+          },
+          {
+            "name": "buyer",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Address"
+            }
+          },
+          {
+            "name": "currency",
+            "type": {
+              "kind": "ENUM",
+              "name": "Currency"
+            }
+          },
+          {
+            "name": "seller",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Address"
+            }
+          },
+          {
+            "name": "since",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt"
+            }
+          },
+          {
+            "name": "until",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt"
+            }
+          }
+        ],
+        "isOneOf": false
       },
       {
         "kind": "OBJECT",
@@ -4836,6 +5733,37 @@ const introspection = {
         "name": "PermissionsUserId"
       },
       {
+        "kind": "OBJECT",
+        "name": "Price",
+        "fields": [
+          {
+            "name": "amount",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "BigInt"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          },
+          {
+            "name": "currency",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "ENUM",
+                "name": "Currency"
+              }
+            },
+            "args": [],
+            "isDeprecated": false
+          }
+        ],
+        "interfaces": []
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "PrimaryNameByInput",
         "inputFields": [
@@ -5185,6 +6113,18 @@ const introspection = {
                 }
               }
             ],
+            "isDeprecated": false
+          },
+          {
+            "name": "market",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "MarketQuery"
+              }
+            },
+            "args": [],
             "isDeprecated": false
           },
           {
